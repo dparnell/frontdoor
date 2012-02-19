@@ -447,7 +447,7 @@ const char* font_line(char character, unsigned char line) {
   return NULL;
 }
 
-void print_string(char* to_print, char* prefix, char* suffix) {
+void print_string(char* to_print, char* prefix, char* suffix, int clear) {
   unsigned char line;
   char* tmp;
 
@@ -462,6 +462,10 @@ void print_string(char* to_print, char* prefix, char* suffix) {
     }
     if(suffix) {
       addstr(suffix);
+    }
+
+    if(clear) {
+      clrtoeol();
     }
     addstr("\n");
   }

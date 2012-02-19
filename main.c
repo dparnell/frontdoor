@@ -32,6 +32,27 @@
 
 #include "font.h"
 
+
+void render(char* data) {
+  char buffer[1024];
+  char* eol_pos;
+
+  while(*data) {
+    eol_pos = strchr(data, '\n');
+    if(eol_pos) {
+      bzero(buffer, sizeof(buffer));
+      strncpy(buffer, data, eol_pos - data + 1);
+
+      addstr(buffer);
+      clrtoeol();
+      data = eol_pos + 1;
+    } else {
+      addstr(data);
+      break;
+    }
+  }
+}
+
 // See https://github.com/ajrisi/lsif for the original lsif source code
 
 /* On platforms that have variable length 
@@ -222,8 +243,10 @@ int lsif(void)
 #error OS Distribution Not Recognized
 #endif
 
-    sprintf(output_buffer, " %s\n", hostname);
+    sprintf(output_buffer, " %s", hostname);
     addstr(output_buffer);
+    clrtoeol();
+    addstr("\n");
   }
  
   return 0;
@@ -242,32 +265,31 @@ int main(void) {
 
   wnd = initscr();
   cbreak();
-  //  raw();
   noecho();
   clear();
   refresh();
   nodelay(wnd, true);
   while(1) {
-    clear();
-    
+    move(0, 0);
+ 
     gethostname(&buffer[0], sizeof(buffer));
     attron(A_BOLD);
-    print_string(&buffer[0], NULL, NULL);
+    print_string(&buffer[0], NULL, NULL, true);
     attroff(A_BOLD);
 
-    addstr("\n");
+    render("\n");
     lsif();
-    addstr("\n");
+    render("\n");
 
     t = time(NULL);
     tm = *localtime(&t);
 
     sprintf(buffer, "System Time: %04d-%02d-%02d %02d:%02d:%02d\n\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-    addstr(buffer);
+    render(buffer);
 
     if(sysinfo(&s_info) == 0) {     
       sprintf(buffer, "Load Average: %0.2f %0.2f %0.2f\n\n", s_info.loads[0]/LOAD_DIVIDER, s_info.loads[1]/LOAD_DIVIDER, s_info.loads[2]/LOAD_DIVIDER);
-      addstr(buffer);
+      render(buffer);
 
       // Uptime
       days = s_info.uptime / 86400;
@@ -275,8 +297,8 @@ int main(void) {
       mins = (s_info.uptime / 60) - (days * 1440) - (hours * 60);
 
       sprintf(buffer, "Uptime: %d days, %d hours, %d minutes, %ld seconds\n\n", days, hours, mins, s_info.uptime % 60);
-      addstr(buffer);
-      
+      render(buffer);
+
       sprintf(buffer, "Ram:\t%llum\tFree:\t%llum\nShared:\t%llum\tBuf:\t%llum\nSwap:\t%llum\tFree:\t%llum\n\n", 
 	      s_info.totalram *(unsigned long long)s_info.mem_unit / (1024*1024), 
 	      s_info.freeram *(unsigned long long)s_info.mem_unit / (1024*1024),
@@ -285,16 +307,18 @@ int main(void) {
 	      s_info.totalswap *(unsigned long long)s_info.mem_unit / (1024*1024),
 	      s_info.freeswap *(unsigned long long)s_info.mem_unit / (1024*1024)
 	      );
-      addstr(buffer);
+      render(buffer);
+      // addstr(buffer);
 
       // Number of processes currently running.
       sprintf(buffer, "Number of processes: %d\n", s_info.procs);
-      addstr(buffer);
+      render(buffer);
     }
 
     attron(A_BOLD);
-    addstr("\nPress any key to login\n");
+    render("\nPress any key to login\n");
     attroff(A_BOLD);
+    clrtobot();
 
     refresh();
 
