@@ -18,7 +18,9 @@ The code currently on supports Linux and has only been tested on Ubuntu 10.04 LT
 1. Compile the code by running `make`
 2. Move the program into place, I suggest `/usr/local/sbin`
 3. Alter `/etc/init/tty1.conf as follows
-<pre><code># tty1 - getty
+
+<pre><code>
+# tty1 - getty
 #
 # This service maintains a getty on tty1 from the point the system is
 # started until it is shut down again.
@@ -29,4 +31,7 @@ stop on runlevel [!2345]
 respawn
 exec /sbin/getty -n -l /usr/local/sbin/frontdoor -8 38400 tty1
 </code></pre>
-4. Reboot
+
+After a reboot you should see the new front door screen looking something like the following:
+
+![Example Output](https://github.com/dparnell/frontdoor/raw/master/images/frontdoor.png)
