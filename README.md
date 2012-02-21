@@ -13,7 +13,7 @@ FrontDoor uses ncurses, so to compile it install the `ncurses-dev` package.
 Installation
 ------------
 
-The code currently on supports Linux and has only been tested on Ubuntu 10.04 LTS.
+The code currently only supports Linux and has only been tested on Ubuntu 10.04 LTS.
 
 1. Compile the code by running `make`
 2. Move the program into place, I suggest `/usr/local/sbin`
