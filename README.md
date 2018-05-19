@@ -17,9 +17,19 @@ The code currently only supports Linux and has only been tested on Ubuntu 10.04 
 
 1. Compile the code by running `make`
 2. Move the program into place, I suggest `/usr/local/sbin`
-3. Alter `/etc/init/tty1.conf as follows
+3. Alter `/lib/systemd/system/getty@.service` as follows
 
-<pre><code>
+```
+[Service]
+# the VT is cleared by TTYVTDisallocate
+ExecStart=-/sbin/agetty --noclear -n -l /usr/local/sbin/frontdoor -8 %I $TERM
+```
+
+Installation on older machines
+------------------------------
+Alter `/etc/init/tty1.conf` as follows
+
+```
 # tty1 - getty
 #
 # This service maintains a getty on tty1 from the point the system is
@@ -30,7 +40,7 @@ stop on runlevel [!2345]
 
 respawn
 exec /sbin/getty -n -l /usr/local/sbin/frontdoor -8 38400 tty1
-</code></pre>
+```
 
 After a reboot you should see the new front door screen looking something like the following:
 
