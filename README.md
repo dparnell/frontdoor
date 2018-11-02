@@ -10,20 +10,22 @@ Requirements
 
 FrontDoor uses ncurses, so to compile it install the `ncurses-dev` package.
 
-Installation
-------------
+Installation on Ubuntu 16.04
+----------------------------
 
-The code currently only supports Linux and has only been tested on Ubuntu 10.04 LTS.
+The code currently only supports Linux.
 
 1. Compile the code by running `make`
 2. Move the program into place, I suggest `/usr/local/sbin`
-3. Alter `/lib/systemd/system/getty@.service` as follows
+3. Execute `systemctl edit getty@tty1` and add the following content
 
 ```
 [Service]
-# the VT is cleared by TTYVTDisallocate
+ExecStart=
 ExecStart=-/sbin/agetty --noclear -n -l /usr/local/sbin/frontdoor -8 %I $TERM
 ```
+
+4. Reboot
 
 Installation on older machines
 ------------------------------
